@@ -3,7 +3,7 @@
 [在线体验地址](http://www.iamzfj.cn/music)
 
 ![](https://upload-images.jianshu.io/upload_images/2514755-634d509435a83626.gif?imageMogr2/auto-orient/strip)
-
+或手机扫描：![](https://upload-images.jianshu.io/upload_images/2514755-5f0b14acc464cf70.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 打造精美音乐WebAppp，提供优雅的用户体验，且能听付费歌曲（比如周杰伦等），为祖国2020全面脱贫实现小康社会尽一份自己力量，打赢这场脱贫攻坚战。精准扶贫，让穷人也能听到好的音乐，让穷人省下一笔钱来脱贫，愿天下没有穷人！
 
 当然，以上是开玩笑的，主要还是造轮子玩。
