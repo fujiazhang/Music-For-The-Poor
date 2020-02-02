@@ -22,7 +22,7 @@ npm run build   //打包
 
 首页主要由顶部搜索和推荐歌单与推荐单曲构成
 
-![](https://upload-images.jianshu.io/upload_images/2514755-d8a26972f350bb89.gif?imageMogr2/auto-orient/strip)
+![](https://upload-images.jianshu.io/upload_images/2514755-d8a26972f350bb89.gif?imageMogr2/auto-orient/strip) 
 
 ### 未来规划和展望
 目前武汉新型肺炎爆发，适逢春节，国家号召宅在家里，口罩难求，怕是怕死懒得出门，一直在家里作者项目，进度飞快，这个项目的核心已经完成，但是还是有很多扩展的余地。关于未来的规划，我是这么安排的:
