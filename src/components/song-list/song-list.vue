@@ -12,6 +12,7 @@
     </div>
 </template>
 <script>
+import { createSong, filterSinger } from '@/common/js/song'
 import { mapActions } from 'vuex'
 export default {
   props: {
@@ -23,7 +24,11 @@ export default {
   },
   methods: {
     selectSongItem (index) {
-      this.selectPlay({ list: this.list, index: index })
+      let list = []
+      this.list.forEach((e) => {
+        list.push(createSong(e.id, e.cid, filterSinger(e.singerName), e.name, null, null))
+      })
+      this.selectPlay({ list: list, index: index })
     },
     ...mapActions({
       'selectPlay': 'selectPlay'

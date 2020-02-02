@@ -22,6 +22,9 @@ const mutations = {
   },
   SET_PLAYING_STATE (state, flag) {
     state.playing = flag
+  },
+  SET_SEARCHBOX_FOCUS (state, flag) {
+    state.searchBoxFocue = flag
   }
 }
 export default mutations

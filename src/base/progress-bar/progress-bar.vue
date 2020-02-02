@@ -7,7 +7,14 @@
            @touchmove.prevent="progressTouchMove"
            @touchend="progressTouchEnd"
       >
-        <div class="progress-btn"></div>
+        <div class="progress-btn" v-show="songReady"></div>
+        <div class="loading" v-show="!songReady">
+          <div class="loader">
+            <div class="face">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -24,6 +31,9 @@ export default {
     percent: {
       type: Number,
       default: 0
+    },
+    songReady: {
+      type: Boolean
     }
   },
   created () {
@@ -113,4 +123,61 @@ export default {
           border: 3px solid #fff
           border-radius: 50%
           background: #999
+.loading
+  width 100%
+  height 100%
+  display flex
+  align-items center
+  margin-left 7.5px
+.loader
+    width: 15px;
+    height: 15px
+    font-size: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+.loader .face:nth-child(1) {
+    width: 100%;
+    height: 100%;
+    color: #ababab;
+    border-color: currentColor currentColor transparent transparent;
+    border-width: 0.2em 0em 0em 0.2em;
+    --deg: -135deg;
+    animation-direction: reverse;
+}
+.loader .face .circle {
+    position: absolute;
+    width: 50%;
+    height: 0.1em;
+    top: 50%;
+    left: 50%;
+    background-color: transparent;
+    transform: rotate(var(--deg));
+    transform-origin: left;
+}
+.loader .face .circle::before {
+    position: absolute;
+    top: -0.25em;
+    right: -0.25em;
+    content: '';
+    width: .5em;
+    height: .5em;
+    background-color: currentColor;
+    border-radius: 50%;
+    // box-shadow: 0 0 2em, 0 0 4em, 0 0 6em, 0 0 8em, 0 0 10em, 0 0 0 0.5em rgba(255, 255, 0, 0.1);
+}
+
+.loader .face {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    animation: animate 1.5s linear infinite;
+}
+@keyframes animate  {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
 </style>

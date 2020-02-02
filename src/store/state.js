@@ -7,6 +7,7 @@ const state = {
   playing: false,
   playlist: [],
   sequenceList: [],
-  mode: playMode.sequence
+  mode: playMode.sequence,
+  searchBoxFocue: false
 }
 export default state

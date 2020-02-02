@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <Header></Header>
     <div class="home-warrper">
       <Scroll class="recommend-content" ref="scroll">
         <div>
@@ -19,26 +18,25 @@
           </div>
           <div class="newSongs">
             <div class="new-title">
-              新歌首发
+              推荐歌单
             </div>
             <ul class="new-list">
-              <li v-for="(item,index) in newSongList" :key="item.cid" @click="selectSongItem(index)">
-                <img :src="item.picUrl" alt="" srcset="">
-                <h3 class="item-title">{{item.name}}</h3>
-                <p class="item-desc">{{item.artists[0].name}}</p>
+              <li v-for="item in songList" :key="item.id" @click="navDisc(item)">
+                  <img v-lazy='item.picUrl' >
+                  <h3 class="item-title">{{item.name}}</h3>
+                  <p class="item-desc">{{item.intro.name}}</p>
               </li>
             </ul>
           </div>
           <div class="newSongs">
             <div class="new-title">
-              推荐歌单
+              新歌首发
             </div>
             <ul class="new-list">
-              <li v-for="item in songList" :key="item.id" @click="navDisc(item)">
-                 <!-- 原因是 歌单id为上面那两个时，读取时间会非常非常的久 然后api报错 所以屏蔽了 -->
-                  <img :src="item.picUrl" alt="" srcset=""  @load="loadImg">
-                  <h3 class="item-title">{{item.name}}</h3>
-                  <p class="item-desc">{{item.intro.name}}</p>
+              <li v-for="(item,index) in newSongList" :key="item.cid" @click="selectSongItem(index)" >
+                <img v-lazy="item.picUrlBig" @load="loadImg(newSongList,index)">
+                <h3 class="item-title">{{item.musicName}}</h3>
+                <p class="item-desc">{{item.singerName}}</p>
               </li>
             </ul>
           </div>
@@ -50,14 +48,15 @@
 </template>
 
 <script>
-import Header from '@/components/m-header/m-header'
+
 import Slider from '@/base/slider/slider'
 import Scroll from '@/base/scroll/scroll'
+import { createSong } from '@/common/js/song'
 import { getNewSong, getDiscList } from '@/api/home'
 import { mapMutations, mapActions } from 'vuex'
+
 export default {
   components: {
-    Header,
     Slider,
     Scroll
   },
@@ -65,6 +64,8 @@ export default {
     this.getBaner()
     this._getNewSong()
     this.getSongList()
+  },
+  computed: {
   },
   activated () {
   },
@@ -79,12 +80,19 @@ export default {
       // get baner 暂未爬接口 临时数据
     },
     selectSongItem (index) {
-      this.selectPlay({ list: this.newSongList, index: index })
+      let list = []
+      this.newSongList.forEach((e) => {
+        list.push(createSong(e.musicId, e.cid, e.singerName, e.musicName, e.picUrlBig, null))
+      })
+      this.selectPlay({ list: list, index: index })
     },
     async _getNewSong () {
       try {
         let data = await getNewSong()
-        this.newSongList = data.data.data.list
+        let list = data.data.data.total.list.splice(0, 15).map((e) => {
+          return e.music
+        })
+        this.newSongList = list
       } catch (error) {
         console.log(error)
       }
@@ -103,12 +111,14 @@ export default {
         path: `/home/${item.id}`
       })
     },
-    loadImg () {
-      if (!this.checkLoaded) {
-        setTimeout(() => {
-          this.$refs.scroll.refresh()
-        }, 20)
-        this.checkLoaded = true
+    loadImg (list, index) {
+      if (index === list.length - 1) {
+        if (!this.checkLoaded) {
+          setTimeout(() => {
+            this.$refs.scroll.refresh()
+          }, 20)
+          this.checkLoaded = true
+        }
       }
     },
     ...mapMutations({
@@ -128,7 +138,7 @@ export default {
   width: calc(100% - 20px);
   left 10px;
   top: 49px;
-  bottom: 0;
+  bottom: 50px;
   .recommend-content
     height: 100%;
     overflow: hidden;
@@ -171,4 +181,5 @@ export default {
             font-size 12px
             color  #999
             no-wrap()
+
 </style>

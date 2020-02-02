@@ -1,6 +1,6 @@
 <template>
     <div class="player-box">
-        <div class="mini-playerricon" @click="open">
+        <div class="mini-playerricon"  @click="open" v-show="!searchBoxFocue">
             <MusicAnimation></MusicAnimation>
         </div>
         <transition appear name="slide">
@@ -11,21 +11,18 @@
                 </div>
                 <div class="normal-player">
                     <div class="background">
-                      <!-- 是否是单曲信息包含 -->
-                      <img v-show="currentSong.picUrl" :src="currentSong.picUrl" alt="" width="100%" height="100%">
-                      <img v-show="!currentSong.picUrl" :src="local_currentSong.pic" alt="" width="100%" height="100%">
+                      <img v-show="currentSong.image" :src="currentSong.image" alt="" width="100%" height="100%">
                     </div>
                     <div class="middle">
                       <div class="cd-wrapper">
-                        <img  v-show="currentSong.picUrl" :src="currentSong.picUrl" alt="">
-                        <img v-show="!currentSong.picUrl" :src="local_currentSong.pic" alt="">
+                        <img  v-show="currentSong.image" :src="currentSong.image" alt="">
                       </div>
                     </div>
                     <div class="bottom">
                       <div class="progress-wrapper">
                         <span  class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                          <ProgressBar  :percent="percent" @percentChange="onProgressBarChange"
+                          <ProgressBar  :percent="percent" :songReady="songReady"  @percentChange="onProgressBarChange"
                             @percentChanging="onProgressBarChanging"></ProgressBar>
                         </div>
                         <span  class="time time-r">{{format(duration)}}</span>
@@ -67,13 +64,14 @@ import MusicAnimation from '@/base/music-animation/music-animation'
 import ProgressBar from '@/base/progress-bar/progress-bar'
 import { getSongUrl } from '@/api/song'
 import { mapGetters, mapMutations } from 'vuex'
+import { playMode } from '@/common/js/config'
 export default {
   components: {
     MusicAnimation,
     ProgressBar
   },
   computed: {
-    ...mapGetters(['fullScreen', 'currentSong', 'playing', 'playlist', 'currentIndex']),
+    ...mapGetters(['fullScreen', 'currentSong', 'playing', 'playlist', 'currentIndex', 'mode', 'searchBoxFocue']),
     percent () {
       return this.currentTime / this.duration
     }
@@ -89,21 +87,17 @@ export default {
       playingLyric: '',
       isPureMusic: false,
       pureMusicLyric: '',
-      duration: '',
-      local_currentSong: {} // vuex 里 getter计算属性currentSong的映射
+      duration: ''
     }
   },
   watch: {
     currentSong (newSong, oldSong) {
-      this.local_currentSong = newSong
-    },
-    local_currentSong (newSong, oldSong) {
       let _this = this
-      /* 确认点击的是否是当前播放 */
+      /* 确认点击的是否当前播放 */
       if (newSong.id === oldSong.id) {
         return
       }
-      //   this.songReady = false
+      this.songReady = false
       //   this.canLyricPlay = false
       //   if (this.currentLyric) {
       //     this.currentLyric.stop()
@@ -113,31 +107,35 @@ export default {
       //     this.playingLyric = ''
       //     this.currentLineNum = 0
       //   }
-      if (newSong.url) {
-        this.$refs.audio.src = newSong.url
-        this.$refs.audio.play()
-        //   // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
-        clearTimeout(this.timer)
-        this.timer = setTimeout(() => {
-          this.songReady = true
+      // if (newSong.url) {
+      //   this.$refs.audio.src = newSong.url
+      //   this.$refs.audio.play()
+      //   //   // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
+      //   clearTimeout(this.timer)
+      //   this.timer = setTimeout(() => {
+      //     this.songReady = true
+      //   }, 5000)
+      //   //   this.getLyric()
+      // } else {
+      getSongUrl(newSong.id, newSong.cid).then(function (e) {
+        if (!_this.currentSong.image) { // 有图片则不在设置
+          _this.currentSong.image = e.data.data.pic
+        }
+        _this.currentSong.url = e.data.data['320k']
+        _this.$refs.audio.src = _this.currentSong.url
+        _this.$refs.audio.play()
+        // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
+        clearTimeout(_this.timer)
+        _this.timer = setTimeout(() => {
+          _this.songReady = true
         }, 5000)
-        //   this.getLyric()
-      } else {
-        getSongUrl(newSong.id, newSong.cid).then(function (e) {
-          _this.local_currentSong.pic = e.data.data.pic
-          _this.local_currentSong.url = e.data.data['320k']
-          _this.$refs.audio.src = _this.local_currentSong.url
-          _this.$refs.audio.play()
-          //   // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
-          clearTimeout(_this.timer)
-          _this.timer = setTimeout(() => {
-            _this.songReady = true
-          }, 5000)
-        })
-      }
+      })
+      // }
     }
   },
   methods: {
+    // 点击搜索框时 小图标给取消按钮让位
+
     open () {
       this.SET_FULLSCREEN(true)
     },
@@ -174,12 +172,16 @@ export default {
       this.currentTime = e.target.currentTime
     },
     onProgressBarChanging (percent) {
-      this.currentTime = this.$refs.audio.duration * percent
+      if (this.songReady) {
+        this.currentTime = this.$refs.audio.duration * percent
+      }
     },
     onProgressBarChange (percent) {
-      const currentTime = this.$refs.audio.duration * percent
-      this.currentTime = currentTime
-      this.$refs.audio.currentTime = currentTime
+      if (this.songReady) {
+        const currentTime = this.$refs.audio.duration * percent
+        this.currentTime = currentTime
+        this.$refs.audio.currentTime = currentTime
+      }
     },
     togglePlaying (flag) {
       if (!this.songReady) {
@@ -197,7 +199,7 @@ export default {
         return // 确保音乐资源已经准备好，避免报错
       }
       if (this.playlist.length === 1) {
-        // this.loop()
+        this.loop()
       } else {
         let index = this.currentIndex + 1
         if (index === this.playlist.length) {
@@ -226,28 +228,37 @@ export default {
         }
       }
     },
+    loop () {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+      this.SET_PLAYING_STATE(true)
+      // if (this.currentLyric) {
+      // this.currentLyric.seek(0)
+      // }
+    },
     error () {
       clearTimeout(this.timer)
       this.songReady = true
     },
     paused () {
-    //   this.setPlayingState(false)
+    //   this.SET_PLAYING_STATE(false)
     //   if (this.currentLyric) {
     //     this.currentLyric.stop()
     //   }
     },
     end () {
       this.currentTime = 0
-    //   if (this.mode === playMode.loop) {
-    //     this.loop()
-    //   } else {
-    //     this.next()
-    //   }
+      if (this.mode === playMode.loop) {
+        this.loop()
+      } else {
+        this.next()
+      }
     },
     ...mapMutations({
       'SET_FULLSCREEN': 'SET_FULLSCREEN',
       'SET_PLAYING_STATE': 'SET_PLAYING_STATE',
-      'SET_CURRENT_INDEX': 'SET_CURRENT_INDEX'
+      'SET_CURRENT_INDEX': 'SET_CURRENT_INDEX',
+      'SET_PLAY_MODE': 'SET_PLAY_MODE'
     })
   }
 }
@@ -261,14 +272,18 @@ export default {
     top 24.5px
     width 30px
     transform translateY(-50%)
+
 .slide-enter-active, .slide-leave-active
     transition: all 0.3s
 
 .slide-enter, .slide-leave-to
     transform: translate3d(100%, 0, 0)
+
+.slideFadeIn-enter-active, .slideFadeIn-leave-active
+    transition: all 0.3s
 .player
     position fixed
-    z-index 150
+    z-index 160
     left 0
     top 0
     bottom 0

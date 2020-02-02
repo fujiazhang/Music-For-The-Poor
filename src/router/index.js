@@ -2,6 +2,10 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Disc from '@/views/Disc.vue'
+import Mv from '@/views/mv.vue'
+import My from '@/views/my.vue'
+import Singer from '@/views/singer.vue'
+import singerHome from '@/views/singerHome.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -19,15 +23,28 @@ const routes = [
         component: Disc
       }
     ]
+  },
+  {
+    path: '/mv',
+    name: 'mv',
+    component: Mv
+  },
+  {
+    path: '/my',
+    name: 'my',
+    component: My
+  },
+  {
+    path: '/singer',
+    component: Singer,
+    children: [
+      {
+        path: '/singer/singerHome',
+        name: 'singerHome',
+        component: singerHome
+      }
+    ]
   }
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  // }
 ]
 
 const router = new VueRouter({

@@ -20,3 +20,7 @@ export const currentSong = (state) => {
 export const playing = state => state.playing
 
 export const playlist = (state) => state.playlist
+
+export const mode = state => state.mode
+
+export const searchBoxFocue = state => state.searchBoxFocue

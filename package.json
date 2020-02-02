@@ -12,9 +12,11 @@
     "better-scroll": "^1.15.2",
     "core-js": "^3.4.4",
     "fastclick": "^1.0.6",
+    "jsonp": "^0.2.1",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
+    "vue-toasted": "^1.1.27",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
+    "vue-lazyload": "^1.3.3",
     "vue-template-compiler": "^2.6.10"
   }
 }

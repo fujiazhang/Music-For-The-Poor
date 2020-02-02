@@ -1,4 +1,7 @@
 module.exports = {
+  publicPath: '/music/',
+  outputDir: 'music',
+  assetsDir: './static',
   // ...other vue-cli plugin options...
   pwa: {
     name: 'Music',
@@ -7,16 +10,16 @@ module.exports = {
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'white',
     iconPaths: {
-      appleTouchIcon: 'img/icons/apple-touch-icon-152x152.png',
-      maskIcon: 'img/icons/safari-pinned-tab.svg',
-      msTileImage: 'img/icons/msapplication-icon-144x144.png'
+      appleTouchIcon: 'public/img/icons/apple-touch-icon-152x152.png',
+      maskIcon: 'public/img/icons/safari-pinned-tab.svg',
+      msTileImage: 'public/img/icons/msapplication-icon-144x144.png'
     },
 
     // configure the workbox plugin
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
-      swSrc: 'dev/sw.js'
+      swSrc: 'src/registerServiceWorker.js'
       // ...other Workbox options...
     }
   },

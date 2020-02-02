@@ -1,6 +1,6 @@
 import originJsonp from 'jsonp'
 
-export default function jsonp2(url, data, option) {
+export default function jsonp2 (url, data, option) {
   url += (url.indexOf('?') < 0 ? '?' : '&') + param(data)
 
   return new Promise((resolve, reject) => {
@@ -14,7 +14,7 @@ export default function jsonp2(url, data, option) {
   })
 }
 
-export function param(data) {
+export function param (data) {
   let url = ''
   for (var k in data) {
     let value = data[k] !== undefined ? data[k] : ''

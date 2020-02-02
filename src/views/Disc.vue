@@ -40,9 +40,16 @@ export default {
         this.$router.push('/home')
         return
       }
-      getSongList(this.disc.id).then((res) => {
-        this.discInfo = res.data.data
-      })
+      getSongList(this.disc.id)
+        .then((res) => {
+          this.discInfo = res.data.data
+        })
+        .catch((err) => {
+          if (err.message.includes('timeout')) {
+            alert('这个歌单似乎出了一点问题，换个试试趴~')
+            this.$router.back()
+          }
+        })
     }
   },
   components: {

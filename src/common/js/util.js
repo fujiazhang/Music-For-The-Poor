@@ -15,7 +15,6 @@ export function shuffle (arr) {
 
 export function debounce (func, delay) {
   let timer
-
   return function (...args) {
     if (timer) {
       clearTimeout(timer)
@@ -23,5 +22,13 @@ export function debounce (func, delay) {
     timer = setTimeout(() => {
       func.apply(this, args)
     }, delay)
+  }
+}
+export function isWeiXin () {
+  var ua = window.navigator.userAgent.toLowerCase()
+  if (ua.match(/micromessenger/i) == 'micromessenger') {  // eslint-disable-line
+    return true
+  } else {
+    return false
   }
 }
