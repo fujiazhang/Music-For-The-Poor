@@ -74,7 +74,7 @@ npm run build   //打包
 
 最后的最后，万水千山总是情，给个star行不行。
 
-![](https://www.52doutu.cn/static/temp/pic/d4565b39356c8450cd0994512a58aa57.gif)
+![](https://s2.ax1x.com/2020/02/03/10fjl4.md.gif)
 
 # 声明
 本项目代码仅用学习交流， 请勿商业使用。
