@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const BASE_URL = 'http://175.24.131.201:3400'
+export const BASE_URL = 'http://47.93.242.149:3400'
 
 // 默认超时设置
 axios.defaults.timeout = 10000

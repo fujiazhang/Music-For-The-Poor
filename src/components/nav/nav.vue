@@ -18,12 +18,12 @@
                 MV
             </span>
         </router-link>
-        <router-link to="/my" class="nav-item" tag="div">
+        <!-- <router-link to="/my" class="nav-item" tag="div">
             <i class="iconfont iconwodedangxuan"></i>
             <span>
                 我的
             </span>
-        </router-link>
+        </router-link> -->
     </div>
 </template>
 
