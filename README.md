@@ -1,4 +1,4 @@
-# v3
+# music
 
 ## Project setup
 ```
