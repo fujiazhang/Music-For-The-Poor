@@ -3,18 +3,22 @@ import Loading from './loading'
 
 const loadingDirective = {
     mounted(el,binding) {
-        //根据自定义指令参数 渲染对应loading的颜色 无法组件哪儿v-bind pros传值，所以这里修改
-        Loading.props.color.default = binding.value.color 
         const app = createApp(<Loading />)
-
         const instance = app.mount(document.createElement('div'))
-        el.instance = instance
+        
+        binding.value.title && instance.setTitle(binding.value.title)
+        binding.value.color && instance.setColor(binding.value.color)
+
+        el.instance = instance // 存一个
 
         if(binding.value.loading){
             append(el)
         }
     },
     updated(el,binding) {
+        binding.value.title && el.instance.setTitle(binding.value.title)
+        binding.value.color && el.instance.setColor(binding.value.color)
+
         if(binding.value.loading !== binding.oldValue.loading){
             binding.value.loading? append(el) : remove(el)
         }

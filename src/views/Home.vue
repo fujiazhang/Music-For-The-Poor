@@ -18,7 +18,7 @@
               </li>
             </ul> -->
           </div>
-          <div class="newSongs" v-loading="{loading:loading,color:'red'}">
+          <div class="newSongs" v-loading="{loading:loading,color:'red',title:'加载中...'}">
             <div class="new-title">
               新歌首发
             </div>

@@ -1,19 +1,22 @@
 <template>
-    <div class="wrapper">
-        <span class="line1" :class="iconColor"></span>
-        <span class="line2" :class="iconColor"></span>
-        <span class="line3" :class="iconColor"></span>
-        <span class="line4" :class="iconColor"></span>
+    <div>
+        <div class="wrapper">
+            <span class="line1" :class="iconColor"></span>
+            <span class="line2" :class="iconColor"></span>
+            <span class="line3" :class="iconColor"></span>
+            <span class="line4" :class="iconColor"></span>
+        </div>
+        <div class="title">{{title}}</div>
     </div>
 </template>
 <script>
 export default {
   name:'loading',
-  props: {
-    color: {
-      type: String,
-      default:''
-    }
+  data() {
+      return {
+        title:'',
+        color:''
+      }
   },
   computed: {
     iconColor () {
@@ -29,7 +32,15 @@ export default {
       }
       return ''
     }
-  }
+  },
+  methods: {
+      setTitle(title){
+        this.title = title
+      },
+      setColor(color){
+          this.color = color
+      }
+  },
 }
 </script>
 <style lang="stylus" scoped>
@@ -91,4 +102,9 @@ span {
             height: 20px;
         }
     }
+.title
+    font-size 12px 
+    color #333
+    padding-top 10px
+    padding-left 18px
 </style>
