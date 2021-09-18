@@ -1,20 +1,34 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import Disc from '../views/Disc.vue'
 
 const routes = [
   {
     path: '/',
-    redirect:'/home'
+    redirect: '/home'
   },
   {
     path: '/home',
     name: 'Home',
     component: Home,
+    children: [
+      {
+        path: '/home/disc/:id',
+        name: 'disc',
+        component: Disc
+      }
+    ]
   },
   // {
   //   path: '/singer',
-  //   name: 'About',
-  //   component: () => import('../views/About.vue')
+  //   component: Singer,
+  //   children: [
+  //     // {
+  //     //   path: '/singer/singerHome',
+  //     //   name: 'singerHome',
+  //     //   component: () => import('../views/singerHome.vue')
+  //     // }
+  //   ]
   // }
 ]
 

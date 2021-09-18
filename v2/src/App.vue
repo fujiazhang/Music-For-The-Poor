@@ -9,17 +9,15 @@
   </div>
 </template>
 <script>
-import Header from '@/components/m-header/m-header'
-import Player from '@/components/player/player'
-import Nav from '@/components/nav/nav'
+import Header from "@/components/m-header/m-header";
+import Player from "@/components/player/player";
+import Nav from "@/components/nav/nav";
 export default {
   components: {
     Header,
     Player,
-    Nav
-  }
-
-}
+    Nav,
+  },
+};
 </script>
-<style lang="stylus">
-</style>
+<style lang="stylus"></style>

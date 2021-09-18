@@ -1,8 +1,8 @@
-function getRandomInt (min, max) {
+function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-export function shuffle (arr) {
+export function shuffle(arr) {
   let _arr = arr.slice()
   for (let i = 0; i < _arr.length; i++) {
     let j = getRandomInt(0, i)
@@ -13,7 +13,7 @@ export function shuffle (arr) {
   return _arr
 }
 
-export function debounce (func, delay) {
+export function debounce(func, delay) {
   let timer
   return function (...args) {
     if (timer) {
@@ -24,10 +24,25 @@ export function debounce (func, delay) {
     }, delay)
   }
 }
-export function isWeiXin () {
+export function isWeiXin() {
   var ua = window.navigator.userAgent.toLowerCase()
   if (ua.match(/micromessenger/i) == 'micromessenger') {  // eslint-disable-line
     return true
+  } else {
+    return false
+  }
+}
+
+export const isIphoneX = () => {
+  if (/iphone/gi.test(window.navigator.userAgent)) {
+    let x = (window.screen.width === 375 && window.screen.height === 812);
+    let xsMax = (window.screen.width === 414 && window.screen.height === 896);
+    let xR = (window.screen.width === 414 && window.screen.height === 896);
+    if (x || xsMax || xR) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
     return false
   }
