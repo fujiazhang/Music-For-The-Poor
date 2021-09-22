@@ -7,25 +7,15 @@
             <div class="player" v-show="fullScreen">
                 <div class="nav">
                     <div class="back" @click="back"><i class="iconfont iconfanhui"></i></div>
-                    <div class="nav-text" v-if="currentSong">
-                      {{currentSong.songname}}
-                    </div>
-                    <div class="down" v-if="_IsPC">
-                      <a :href="audioPlayUrl" target="_black" :download="currentSong.songname" >
-                        <i class="iconfont iconxiazai"></i>
-                      </a>
-                    </div>
-                    <div class="down" v-else @click="showTips('请在pc端进行下载😣')">
-                      <i class="iconfont iconxiazai"></i>
-                    </div>
+                    <div class="nav-text">{{currentSong.name}}</div>
                 </div>
                 <div class="normal-player">
-                    <div class="background" v-if="currentSong">
-                      <img :src="`https://y.gtimg.cn/music/photo_new/T002R300x300M000${currentSong?.albummid}.jpg`" alt="" width="100%" height="100%">
+                    <div class="background">
+                      <img v-show="currentSong.image" :src="currentSong.image" alt="" width="100%" height="100%">
                     </div>
                     <div class="middle">
-                      <div class="cd-wrapper" v-show="currentSong">
-                        <img  :src="`https://y.gtimg.cn/music/photo_new/T002R300x300M000${currentSong?.albummid}.jpg`" alt="">
+                      <div class="cd-wrapper">
+                        <img  v-show="currentSong.image" :src="currentSong.image" alt="">
                       </div>
                     </div>
                     <div class="bottom">
@@ -59,7 +49,7 @@
                 </div>
             </div>
         </transition>
-         <audio ref="audioRef"
+        <audio ref="audio"
            @playing="ready"
            @error="error"
            @timeupdate="updateTime"
@@ -72,101 +62,215 @@
 <script>
 import MusicAnimation from "@/components-base/music-animation/music-animation";
 import ProgressBar from "@/components-base/progress-bar/progress-bar";
-import { useStore } from "vuex";
-import { computed, watch, ref, reactive } from "vue";
-import { Api } from "@/api";
-import { IsPC } from "@/common/js/util";
+// import { getSongUrl } from "@/api/song";
+import { mapGetters, mapMutations } from "vuex";
+import { playMode } from "@/common/js/config";
 export default {
-  name: "player",
   components: {
     MusicAnimation,
     ProgressBar,
   },
-  setup() {
-    const store = useStore();
-    const fullScreen = computed(() => store.state.fullScreen);
-    const searchBoxFocue = computed(() => store.state.searchBoxFocue);
-    const playlist = computed(() => store.state.playlist);
-    const playing = computed(() => store.state.playing);
-    const currentSong = computed(() => store.getters.currentSong);
-    const currentIndex = computed(() => store.state.currentIndex);
-    const mode = computed(() => store.state.mode);
-    const _IsPC = computed(() => IsPC());
-
-    const audioRef = ref(null);
-    let audioPlayUrl = ref(null);
-    let songReady = ref(false);
-
-    watch(currentIndex, (newCurrentIndex) => {
-      getSong(newCurrentIndex);
-    });
-
-    async function getSong(newCurrentIndex) {
-      console.log("currentSong", currentSong);
-      try {
-        songReady.value = false;
-        let res = await Api.PlayerApi.getSongPlayUrl(
-          playlist.value[newCurrentIndex]?.songmid
-        );
-        const audioEl = audioRef.value;
-        audioEl.src = res.data[playlist.value[newCurrentIndex]?.songmid];
-        audioPlayUrl.value = res.data[playlist.value[newCurrentIndex]?.songmid];
-        audioEl.play();
-        setTimeout(() => {
-          songReady.value = true;
-        }, 500);
-      } catch (error) {
-        console.log(error);
+  computed: {
+    ...mapGetters([
+      "fullScreen",
+      "currentSong",
+      "playing",
+      "playlist",
+      "currentIndex",
+      "mode",
+      "searchBoxFocue",
+    ]),
+    percent() {
+      return this.currentTime / this.duration;
+    },
+  },
+  data() {
+    return {
+      songReady: false,
+      currentTime: 0,
+      radius: 32,
+      currentLyric: null,
+      currentLineNum: 0,
+      currentShow: "cd",
+      playingLyric: "",
+      isPureMusic: false,
+      pureMusicLyric: "",
+      duration: "",
+    };
+  },
+  watch: {
+    currentSong(newSong, oldSong) {
+      let _this = this;
+      /* 确认点击的是否当前播放 */
+      if (newSong.id === oldSong.id) {
+        return;
       }
-    }
+      this.songReady = false;
+      //   this.canLyricPlay = false
+      //   if (this.currentLyric) {
+      //     this.currentLyric.stop()
+      //     // 重置为null
+      //     this.currentLyric = null
+      //     this.currentTime = 0
+      //     this.playingLyric = ''
+      //     this.currentLineNum = 0
+      //   }
+      // if (newSong.url) {
+      //   this.$refs.audio.src = newSong.url
+      //   this.$refs.audio.play()
+      //   //   // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
+      //   clearTimeout(this.timer)
+      //   this.timer = setTimeout(() => {
+      //     this.songReady = true
+      //   }, 5000)
+      //   //   this.getLyric()
+      // } else {
+      // 有用
+      // getSongUrl(newSong.id, newSong.cid).then(function (e) {
+      //   if (!_this.currentSong.image) {
+      //     // 有图片则不在设置
+      //     _this.currentSong.image = e.data.data.pic;
+      //   }
+      //   _this.currentSong.url = e.data.data["320k"];
+      //   _this.$refs.audio.src = _this.currentSong.url;
+      //   _this.$refs.audio.play();
+      //   // 若歌曲 5s 未播放，则认为超时，修改状态确保可以切换歌曲。
+      //   clearTimeout(_this.timer);
+      //   _this.timer = setTimeout(() => {
+      //     _this.songReady = true;
+      //   }, 5000);
+      // });
 
-    function open() {
-      if (playing.value) {
-        store.commit("SET_FULLSCREEN", true);
-      }
-    }
+      // }
+    },
+  },
+  methods: {
+    // 点击搜索框时 小图标给取消按钮让位
 
-    function back() {
-      store.commit("SET_FULLSCREEN", false);
-    }
-
-    function _pad(num, n = 2) {
+    open() {
+      this.SET_FULLSCREEN(true);
+    },
+    back() {
+      this.SET_FULLSCREEN(false);
+    },
+    ready() {
+      clearTimeout(this.timer);
+      // 监听 playing 这个事件确保慢网速或者快速切换歌曲导致的 DOM Exception
+      this.songReady = true;
+      this.duration = this.$refs.audio.duration;
+      //   this.canLyricPlay = true
+      // this.savePlayHistory(this.currentSong)
+      // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
+      //   if (this.currentLyric && !this.isPureMusic) {
+      //     this.currentLyric.seek(this.currentTime * 1000)
+      //   }
+    },
+    _pad(num, n = 2) {
       let len = num.toString().length;
       while (len < n) {
         num = "0" + num;
         len++;
       }
       return num;
-    }
-
-    function format(interval) {
+    },
+    format(interval) {
       interval = interval | 0;
       const minute = (interval / 60) | 0;
-      const second = _pad(interval % 60);
+      const second = this._pad(interval % 60);
       return `${minute}:${second}`;
-    }
-
-    function showTips(str) {
-      alert(str);
-    }
-
-    return {
-      playlist,
-      fullScreen,
-      playing,
-      currentIndex,
-      mode,
-      searchBoxFocue,
-      format,
-      open,
-      back,
-      currentSong,
-      songReady,
-      audioRef,
-      audioPlayUrl,
-      _IsPC,
-      showTips,
-    };
+    },
+    updateTime(e) {
+      this.currentTime = e.target.currentTime;
+    },
+    onProgressBarChanging(percent) {
+      if (this.songReady) {
+        this.currentTime = this.$refs.audio.duration * percent;
+      }
+    },
+    onProgressBarChange(percent) {
+      if (this.songReady) {
+        const currentTime = this.$refs.audio.duration * percent;
+        this.currentTime = currentTime;
+        this.$refs.audio.currentTime = currentTime;
+      }
+    },
+    togglePlaying(flag) {
+      if (!this.songReady) {
+        return;
+      }
+      if (flag) {
+        this.$refs.audio.play();
+      } else {
+        this.$refs.audio.pause();
+      }
+      this.SET_PLAYING_STATE(flag);
+    },
+    next() {
+      if (!this.songReady) {
+        return; // 确保音乐资源已经准备好，避免报错
+      }
+      if (this.playlist.length === 1) {
+        this.loop();
+      } else {
+        let index = this.currentIndex + 1;
+        if (index === this.playlist.length) {
+          index = 0;
+        }
+        this.SET_CURRENT_INDEX(index);
+        if (!this.playing) {
+          this.togglePlaying(true);
+        }
+      }
+    },
+    prev() {
+      if (!this.songReady) {
+        return;
+      }
+      if (this.playlist.length === 1) {
+        // this.loop()
+      } else {
+        let index = this.currentIndex - 1;
+        if (index === -1) {
+          index = this.playlist.length - 1;
+        }
+        this.SET_CURRENT_INDEX(index);
+        if (!this.playing) {
+          this.togglePlaying(true);
+        }
+      }
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
+      this.SET_PLAYING_STATE(true);
+      // if (this.currentLyric) {
+      // this.currentLyric.seek(0)
+      // }
+    },
+    error() {
+      clearTimeout(this.timer);
+      this.songReady = true;
+    },
+    paused() {
+      //   this.SET_PLAYING_STATE(false)
+      //   if (this.currentLyric) {
+      //     this.currentLyric.stop()
+      //   }
+    },
+    end() {
+      this.currentTime = 0;
+      if (this.mode === playMode.loop) {
+        this.loop();
+      } else {
+        this.next();
+      }
+    },
+    ...mapMutations({
+      SET_FULLSCREEN: "SET_FULLSCREEN",
+      SET_PLAYING_STATE: "SET_PLAYING_STATE",
+      SET_CURRENT_INDEX: "SET_CURRENT_INDEX",
+      SET_PLAY_MODE: "SET_PLAY_MODE",
+    }),
   },
 };
 </script>
@@ -223,26 +327,6 @@ export default {
       text-align: center;
     }
 
-    .down {
-      width: 15px;
-      font-size: 20px;
-      width: 25px;
-      font-size: 20px;
-      height: 25px;
-      text-align: center;
-
-      a {
-        display: block;
-        width: 100%;
-        height: 100%;
-        color: #fff;
-      }
-
-      .iconfont {
-        font-size: 22px;
-      }
-    }
-
     .nav-text {
       flex: 1;
       text-align: center;
@@ -271,11 +355,6 @@ export default {
       z-index: -1;
       opacity: 0.6;
       filter: blur(20px);
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
     }
 
     .middle {

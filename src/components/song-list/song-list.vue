@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul  class="list">
-            <li v-for="(item, index) in list" :key="item.id" @click="selectSongItem(index)">
+            <li v-for="(item, index) in list" :key="item.id" @click="selectSongItem(item)">
                 <div class="num">{{index + 1}}</div>
                 <div class="song-box">
                     <h2>{{item.songname}}</h2>
@@ -21,25 +21,23 @@ export default {
       default: [],
     },
   },
-  created() {
-    console.log(this.list);
-  },
+  created() {},
   methods: {
-    selectSongItem(index) {
-      let list = [];
-      this.list.forEach((e) => {
-        list.push(
-          createSong(
-            e.id,
-            e.cid,
-            filterSinger(e.singerName),
-            e.name,
-            null,
-            null
-          )
-        );
-      });
-      this.selectPlay({ list: list, index: index });
+    selectSongItem(item) {
+      // let list = [];
+      // this.list.forEach((e) => {
+      //   list.push(
+      //     createSong(
+      //       e.id,
+      //       e.cid,
+      //       filterSinger(e.singerName),
+      //       e.name,
+      //       null,
+      //       null
+      //     )
+      //   );
+      // });
+      this.selectPlay({ item });
     },
     ...mapActions({
       selectPlay: "selectPlay",

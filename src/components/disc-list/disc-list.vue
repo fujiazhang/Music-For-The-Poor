@@ -82,6 +82,7 @@ export default {
   },
   methods: {
     back() {
+      this.SET_PLAY_ICON_COLOR("black");
       this.$router.back();
     },
     scroll(pos) {

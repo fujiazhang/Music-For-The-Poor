@@ -1,4 +1,5 @@
 import { HomeApi } from "./home";
+import { PlayerApi } from './player'
 
 
 
@@ -9,4 +10,5 @@ const isSuccess = (res) => {
 export const Api = {
   isSuccess: isSuccess,
   HomeApi: new HomeApi(),
+  PlayerApi: new PlayerApi(),
 };
