@@ -73,9 +73,10 @@
 import MusicAnimation from "@/components-base/music-animation/music-animation";
 import ProgressBar from "@/components-base/progress-bar/progress-bar";
 import { useStore } from "vuex";
-import { computed, watch, ref, reactive } from "vue";
+import { computed, watch, ref } from "vue";
 import { Api } from "@/api";
 import { IsPC } from "@/common/js/util";
+import { playMode } from "@/common/js/config";
 export default {
   name: "player",
   components: {
@@ -96,13 +97,22 @@ export default {
     const audioRef = ref(null);
     let audioPlayUrl = ref(null);
     let songReady = ref(false);
+    let currentTime = ref(0);
+    let duration = ref(1);
+    let percent = computed(() => {
+      return currentTime.value / duration.value;
+    });
 
     watch(currentIndex, (newCurrentIndex) => {
       getSong(newCurrentIndex);
     });
 
+    watch(playing, (newPlaying) => {
+      const audioEl = audioRef.value;
+      newPlaying ? audioEl.play() : audioEl.pause();
+    });
+
     async function getSong(newCurrentIndex) {
-      console.log("currentSong", currentSong);
       try {
         songReady.value = false;
         let res = await Api.PlayerApi.getSongPlayUrl(
@@ -150,6 +160,96 @@ export default {
       alert(str);
     }
 
+    function togglePlaying(flg) {
+      store.commit("SET_PLAYING_STATE", flg);
+    }
+
+    function loop() {
+      const audioEl = audioRef.value;
+      audioEl.currentTime = 0;
+      audioEl.play();
+      store.commit("SET_PLAYING_STATE", true);
+      // if (this.currentLyric) {
+      // this.currentLyric.seek(0)
+      // }
+    }
+
+    function next() {
+      if (!songReady.value) {
+        return; // 确保音乐资源已经准备好，避免报错
+      }
+      if (playlist.value.length === 1) {
+        loop();
+      } else {
+        let index = currentIndex.value + 1;
+        if (index === playlist.value.length) {
+          index = 0;
+        }
+        store.commit("SET_CURRENT_INDEX", index);
+        if (!playing.value) {
+          togglePlaying(true);
+        }
+      }
+    }
+    function prev() {
+      if (!songReady.value) {
+        return;
+      }
+      if (playlist.value.length === 1) {
+        loop();
+      } else {
+        let index = currentIndex.value - 1;
+        if (index === -1) {
+          index = playlist.value.length - 1;
+        }
+        store.commit("SET_CURRENT_INDEX", index);
+        if (!playing.value) {
+          togglePlaying(true);
+        }
+      }
+    }
+
+    function end() {
+      currentTime.value = 0;
+      if (mode === playMode.loop) {
+        loop();
+      } else {
+        next();
+      }
+    }
+
+    function ready() {
+      // 监听 playing 这个事件确保慢网速或者快速切换歌曲导致的 DOM Exception
+      const audioEl = audioRef.value;
+      songReady.value = true;
+      duration.value = audioEl.duration;
+      //   this.canLyricPlay = true
+      // this.savePlayHistory(this.currentSong)
+      // 如果歌曲的播放晚于歌词的出现，播放的时候需要同步歌词
+      //   if (this.currentLyric && !this.isPureMusic) {
+      //     this.currentLyric.seek(this.currentTime * 1000)
+      //   }
+    }
+
+    function updateTime(e) {
+      currentTime.value = e.target.currentTime;
+    }
+
+    function onProgressBarChanging(percent) {
+      if (songReady.value) {
+        const audioEl = audioRef.value;
+        currentTime.value = audioEl.duration * percent;
+      }
+    }
+    function onProgressBarChange(percent) {
+      if (songReady.value) {
+        const audioEl = audioRef.value;
+        const _currentTime = audioEl.duration * percent;
+        currentTime.value = _currentTime;
+        audioEl.currentTime = _currentTime;
+      }
+    }
+
     return {
       playlist,
       fullScreen,
@@ -166,6 +266,17 @@ export default {
       audioPlayUrl,
       _IsPC,
       showTips,
+      togglePlaying,
+      next,
+      prev,
+      currentTime,
+      percent,
+      duration,
+      updateTime,
+      end,
+      onProgressBarChange,
+      onProgressBarChanging,
+      ready,
     };
   },
 };
