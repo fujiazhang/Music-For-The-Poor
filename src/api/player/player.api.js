@@ -8,5 +8,19 @@ export class PlayerApi extends Http {
     return res
   }
 
+  async getMvList() {
+    const res = await this.get(`/mv/list`)
+    return res
+  }
+
+  async getMv(mvid) {
+    const res = await this.get(`/mv/url?id=${mvid}`)
+    return res
+  }
+
+  async getComments(id) {
+    const res = await this.get(`/comment?id=${id}&biztype=5`)
+    return res
+  }
 
 }

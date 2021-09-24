@@ -112,19 +112,62 @@ export default {
       newPlaying ? audioEl.play() : audioEl.pause();
     });
 
+    function next() {
+      if (!songReady.value) {
+        return; // 确保音乐资源已经准备好，避免报错
+      }
+      if (playlist.value.length === 1) {
+        loop();
+      } else {
+        let index = currentIndex.value + 1;
+        if (index === playlist.value.length) {
+          index = 0;
+        }
+        store.commit("SET_CURRENT_INDEX", index);
+        if (!playing.value) {
+          togglePlaying(true);
+        }
+      }
+    }
+    function prev() {
+      if (!songReady.value) {
+        return;
+      }
+      if (playlist.value.length === 1) {
+        loop();
+      } else {
+        let index = currentIndex.value - 1;
+        if (index === -1) {
+          index = playlist.value.length - 1;
+        }
+        store.commit("SET_CURRENT_INDEX", index);
+        if (!playing.value) {
+          togglePlaying(true);
+        }
+      }
+    }
+
     async function getSong(newCurrentIndex) {
       try {
         songReady.value = false;
         let res = await Api.PlayerApi.getSongPlayUrl(
           playlist.value[newCurrentIndex]?.songmid
         );
-        const audioEl = audioRef.value;
-        audioEl.src = res.data[playlist.value[newCurrentIndex]?.songmid];
-        audioPlayUrl.value = res.data[playlist.value[newCurrentIndex]?.songmid];
-        audioEl.play();
-        setTimeout(() => {
-          songReady.value = true;
-        }, 500);
+        if (res.data[playlist.value[newCurrentIndex]?.songmid]) {
+          const audioEl = audioRef.value;
+          console.log(res.data[playlist.value[newCurrentIndex]?.songmid]);
+          audioEl.src = res.data[playlist.value[newCurrentIndex]?.songmid];
+          audioPlayUrl.value =
+            res.data[playlist.value[newCurrentIndex]?.songmid];
+          audioEl.play();
+          setTimeout(() => {
+            songReady.value = true;
+          }, 500);
+        } else {
+          store.commit("DELETE_SONG", newCurrentIndex);
+          console.log("糟糕，好像没解析到播放链接");
+          next();
+        }
       } catch (error) {
         console.log(error);
       }
@@ -172,41 +215,6 @@ export default {
       // if (this.currentLyric) {
       // this.currentLyric.seek(0)
       // }
-    }
-
-    function next() {
-      if (!songReady.value) {
-        return; // 确保音乐资源已经准备好，避免报错
-      }
-      if (playlist.value.length === 1) {
-        loop();
-      } else {
-        let index = currentIndex.value + 1;
-        if (index === playlist.value.length) {
-          index = 0;
-        }
-        store.commit("SET_CURRENT_INDEX", index);
-        if (!playing.value) {
-          togglePlaying(true);
-        }
-      }
-    }
-    function prev() {
-      if (!songReady.value) {
-        return;
-      }
-      if (playlist.value.length === 1) {
-        loop();
-      } else {
-        let index = currentIndex.value - 1;
-        if (index === -1) {
-          index = playlist.value.length - 1;
-        }
-        store.commit("SET_CURRENT_INDEX", index);
-        if (!playing.value) {
-          togglePlaying(true);
-        }
-      }
     }
 
     function end() {

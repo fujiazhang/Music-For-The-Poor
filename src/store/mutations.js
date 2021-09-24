@@ -31,6 +31,9 @@ const mutations = {
   },
   SET_SEARCHBOX_FOCUS(state, flag) {
     state.searchBoxFocue = flag
+  },
+  DELETE_SONG(state, index) {
+
   }
 }
 export default mutations

@@ -21,7 +21,7 @@
         <router-link to="/my" class="nav-item" tag="div">
             <i class="iconfont iconwodedangxuan"></i>
             <span>
-                我的
+                电台
             </span>
         </router-link>
     </div>

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Disc from '../views/Disc.vue'
-
+import Mv from '../views/mv'
+import My from '../views/my'
 const routes = [
   {
     path: '/',
@@ -18,6 +19,16 @@ const routes = [
         component: Disc
       }
     ]
+  },
+  {
+    path: '/mv',
+    name: 'mv',
+    component: Mv
+  },
+  {
+    path: '/my',
+    name: 'my',
+    component: My
   },
   // {
   //   path: '/singer',

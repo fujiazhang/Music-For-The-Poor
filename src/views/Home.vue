@@ -6,17 +6,6 @@
           <div class="banner">
             <Slider :sliders="sliders"></Slider>
           </div>
-          <div class="newSongs">
-            <div class="new-title">
-              推荐歌单
-            </div>
-            <ul class="new-list">
-              <li v-for="item in songList" :key="item.id" @click="navDisc(item)">
-                  <img v-lazy='item.cover_url_medium' >
-                  <h3 class="item-title">{{item.title}}</h3>
-              </li>
-            </ul>
-          </div>
           <div class="newSongs" v-loading="{loading:loading,color:'red',title:'加载中...'}">
             <div class="new-title">
               最新
@@ -29,6 +18,17 @@
               </li>
             </ul>
           </div>
+          <div class="newSongs">
+            <div class="new-title">
+              推荐歌单
+            </div>
+            <ul class="new-list">
+              <li v-for="item in songList" :key="item.id" @click="navDisc(item)">
+                  <img v-lazy='item.cover_url_medium' >
+                  <h3 class="item-title">{{item.title}}</h3>
+              </li>
+            </ul>
+          </div>          
           <div class="copyright">
             开发仅作为学习，非商业营利性目的。
           </div>
