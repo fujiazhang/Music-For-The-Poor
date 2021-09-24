@@ -2,6 +2,7 @@
 node_modules
 music/node_modules
 /dist
+/music
 
 
 # local env files
